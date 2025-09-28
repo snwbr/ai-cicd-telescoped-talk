@@ -1,0 +1,12 @@
+.venv
+.env
+.pytest_cache
+
+# ai files
+model_rf.pkl
+changed_files.json
+selected_tests.json
+pytest_output.log
+report.xml
+diagnosis.txt
+test_index.json

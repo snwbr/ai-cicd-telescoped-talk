@@ -1,0 +1,73 @@
+name: AI CI — ML Test Selection + LLM Diagnosis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # Force a failing test to showcase diagnosis; set to '' to disable
+      BREAK_PAYMENT: "1"
+      MIN_TESTS: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache trained model
+        id: cache-model
+        uses: actions/cache@v4
+        with:
+          path: model_rf.pkl
+          key: ${{ runner.os }}-model-${{ hashFiles('ml/**') }}
+
+      - name: Train model (if cache miss)
+        if: steps.cache-model.outputs.cache-hit != 'true'
+        run: python ml/train_test_selector.py
+
+      - name: Collect changed files
+        run: python ci/collect_changed_files.py
+
+      - name: Predict tests with ML (Option 1)
+        run: python ml/predict_tests.py
+
+      - name: Run selected tests
+        id: pytest
+        continue-on-error: true
+        run: python ci/run_selected_tests.py
+
+      - name: Diagnose failure with LLM (Option 3)
+        if: always()
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4o-mini
+        run: python ci/diagnose_failure_llm.py
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-ci-artifacts
+          path: |
+            changed_files.json
+            selected_tests.json
+            pytest_output.log
+            report.xml
+            diagnosis.txt
