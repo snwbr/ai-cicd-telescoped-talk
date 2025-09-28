@@ -17,7 +17,7 @@ np.random.seed(42)
 FILES = ['app/login.py', 'app/payment.py', 'app/ui.py']
 TESTS = ['tests/test_login.py', 'tests/test_payment.py', 'tests/test_ui.py']
 
-def make_example(n=10000):
+def make_example(n=20000):
     rows = []
     for i in range(n):
         # random subset of changed files
@@ -55,7 +55,7 @@ def featurize(df):
     ], axis=1)
     return X
 
-def main(model_path='model_rf.pkl', mapping_path='test_index.json'):
+def main(model_path='model_rf.pkl', mapping_path='files/test_index.json'):
     df = make_example()
     # keep 'none' as a class to learn "likely no failures"
     y = df['failed_test']

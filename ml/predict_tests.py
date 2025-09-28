@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 DEFAULT_MODEL = os.getenv('MODEL_PATH', 'model_rf.pkl')
-MAPPING_PATH = 'test_index.json'
+MAPPING_PATH = 'files/test_index.json'
 
 def featurize_row(files, commit_msg_len=50, weekday=2):
     # align with training features
@@ -21,34 +21,47 @@ def featurize_row(files, commit_msg_len=50, weekday=2):
     row['weekday'] = int(weekday)
     return pd.DataFrame([row])
 
-def decide_tests(changed_files, min_tests=1, top_k=2):
+# ml/predict_tests.py  (reemplaza decide_tests)
+def decide_tests(changed_files, min_tests=1, top_k=None, prob_threshold=None):
     model = joblib.load(DEFAULT_MODEL)
     df = featurize_row(changed_files)
-    # predict proba for classes
     proba = model.predict_proba(df)[0]
     classes = model.classes_
-    scored = sorted(zip(classes, proba), key=lambda x: x[1], reverse=True)
 
-    # classes may include 'none' meaning "likely no failures"
-    tests = [c for c,_ in scored if c != 'none'][:max(top_k, min_tests)]
-    # if none of the known tests are triggered, fall back to a minimal smoke test set
-    if not tests:
-        tests = ['tests/test_login.py']
+    scored = sorted(
+        [(c, float(p)) for c, p in zip(classes, proba) if c != 'none'],
+        key=lambda x: x[1], reverse=True
+    )
 
-    return tests, scored
+    # Umbral opcional
+    if prob_threshold is not None:
+        picked = [c for c, p in scored if p >= prob_threshold]
+    else:
+        k = top_k if top_k is not None else 2
+        picked = [c for c, _ in scored[:k]]
+
+    if not picked:
+        picked = [scored[0][0]] if scored else ['tests/test_login.py']
+    return picked, scored
+
 
 def main():
+    # en main():
+    top_k = int(os.getenv('TOP_K', '3'))
+    prob_threshold = float(os.getenv('PROB_THRESHOLD', '0.10'))
+    
     changed_env = os.getenv('CHANGED_FILES')
     if changed_env:
         changed = [s.strip() for s in changed_env.split(',') if s.strip()]
     else:
         # try to read from artifact of collect_changed_files.py
-        if os.path.exists('changed_files.json'):
-            changed = json.load(open('changed_files.json'))
+        if os.path.exists('files/changed_files.json'):
+            changed = json.load(open('files/changed_files.json'))
         else:
             changed = ['app/login.py']
 
-    tests, scored = decide_tests(changed, min_tests=int(os.getenv('MIN_TESTS', '1')))
+    tests, scored = decide_tests(changed, min_tests=int(os.getenv('MIN_TESTS', '1')),
+                                top_k=top_k, prob_threshold=prob_threshold)
 
     decision = {
         'changed_files': changed,
@@ -58,7 +71,7 @@ def main():
     print("=== AI Test Selection ===")
     print(json.dumps(decision, indent=2))
 
-    with open('selected_tests.json', 'w') as f:
+    with open('files/selected_tests.json', 'w') as f:
         json.dump(decision, f, indent=2)
 
 if __name__ == '__main__':

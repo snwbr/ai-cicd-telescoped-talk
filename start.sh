@@ -9,9 +9,10 @@ pip install -r requirements.txt
 python3 ml/train_test_selector.py
 
 # 2) Simular archivos cambiados y predecir tests
-#CHANGED_FILES="app/login.py,app/payment.py" python3 ml/predict_tests.py
-# o si no se quiere simular cambios, se puede usar el script de collect_changed_files.py
+# export CHANGED_FILES="app/login.py,app/payment.py"
 python ci/collect_changed_files.py
+
+python3 ml/predict_tests.py
 
 # 3) Forzar fallo de demo (opcional para ver diagnóstico)
 export BREAK_PAYMENT=$1

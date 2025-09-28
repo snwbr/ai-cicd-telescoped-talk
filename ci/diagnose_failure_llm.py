@@ -51,7 +51,7 @@ def diagnose_with_llm(log_text: str) -> str:
         return f"[LLM call failed, falling back to rules] {e}"
 
 def main():
-    log_path = Path('pytest_output.log')
+    log_path = Path('files/pytest_output.log')
     if not log_path.exists():
         print('No pytest_output.log found; nothing to diagnose.')
         return
@@ -68,7 +68,7 @@ def main():
     print('=== Failure Diagnosis ===')
     print(summary)
 
-    with open('diagnosis.txt', 'w') as f:
+    with open('files/diagnosis.txt', 'w') as f:
         f.write(summary)
 
 if __name__ == '__main__':

@@ -5,14 +5,14 @@ def main():
     env = os.environ.copy()
     env['PYTHONPATH'] = env.get('PYTHONPATH', os.getcwd())
 
-    if os.path.exists('selected_tests.json'):
-        data = json.load(open('selected_tests.json'))
+    if os.path.exists('files/selected_tests.json'):
+        data = json.load(open('files/selected_tests.json'))
         tests = data.get('selected_tests', [])
     if not tests:
         tests = ['tests/test_login.py']
 
     fail_fast = os.getenv('FAIL_FAST') == '1'
-    args = ['pytest'] + tests + ['-q', '--junitxml', 'report.xml']
+    args = ['pytest'] + tests + ['-q', '--junitxml', 'files/report.xml']
     if fail_fast:
         args.append('-x')
 
@@ -21,7 +21,7 @@ def main():
     print(proc.stdout)
     print(proc.stderr, file=sys.stderr)
 
-    with open('pytest_output.log', 'w') as f:
+    with open('files/pytest_output.log', 'w') as f:
         f.write(proc.stdout)
         f.write('\n--- STDERR ---\n')
         f.write(proc.stderr)

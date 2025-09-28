@@ -15,7 +15,6 @@ def git_diff_files():
 
 def main():
     changed = git_diff_files()
-    print("Changed files:", changed)
     if not changed:
         # Fallback to env or a sensible default for demo
         env = os.getenv('CHANGED_FILES')
@@ -25,7 +24,7 @@ def main():
             changed = ['app/login.py', 'app/payment.py']
 
     print("Changed files:", changed)
-    with open('changed_files.json', 'w') as f:
+    with open('files/changed_files.json', 'w') as f:
         json.dump(changed, f, indent=2)
 
 if __name__ == '__main__':

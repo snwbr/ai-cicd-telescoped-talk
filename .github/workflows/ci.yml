@@ -66,8 +66,8 @@ jobs:
         with:
           name: ai-ci-artifacts
           path: |
-            changed_files.json
-            selected_tests.json
-            pytest_output.log
-            report.xml
-            diagnosis.txt
+            files/changed_files.json
+            files/selected_tests.json
+            files/pytest_output.log
+            files/report.xml
+            files/diagnosis.txt
