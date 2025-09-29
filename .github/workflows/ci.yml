@@ -9,6 +9,10 @@ on:
 env:
   ARTIFACT_DIR: files
   PYTHONUNBUFFERED: "1"
+  PROB_THRESHOLD: "0.15"
+  TOP_K: "3"
+  MIN_TESTS: "1"
+  BREAK_PAYMENT: ""
 
 jobs:
   build:
