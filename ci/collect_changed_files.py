@@ -1,31 +1,35 @@
-import json
-import os
-import subprocess
+# ci/collect_changed_files.py
+import json, os, subprocess, sys, pathlib
+
+APP_PREFIX = "app/"
 
 def git_diff_files():
     try:
-        # Compare with origin/main if available; otherwise with previous commit
         base = os.getenv('DIFF_BASE', 'origin/main')
-        res = subprocess.run(['git', 'fetch', 'origin', 'main'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        res = subprocess.run(['git', 'diff', '--name-only', f'{base}...HEAD'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-        files = [line.strip() for line in res.stdout.splitlines() if line.strip()]
+        subprocess.run(['git', 'fetch', 'origin', 'main'], check=False,
+                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        res = subprocess.run(['git', 'diff', '--name-only', f'{base}...HEAD'],
+                             check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        files = [l.strip() for l in res.stdout.splitlines() if l.strip()]
         return files
     except Exception:
         return []
 
 def main():
     changed = git_diff_files()
-    if not changed:
-        # Fallback to env or a sensible default for demo
-        env = os.getenv('CHANGED_FILES')
-        if env:
-            changed = [s.strip() for s in env.split(',') if s.strip()]
-        else:
-            changed = ['app/login.py', 'app/payment.py']
+    # Permitir override manual
+    env = os.getenv('CHANGED_FILES')
+    if env:
+        changed = [s.strip() for s in env.split(',') if s.strip()]
 
-    print("Changed files:", changed)
+    # Filtrar SOLO archivos del app/
+    changed_app = [f for f in changed if f.startswith(APP_PREFIX)]
+
+    print("Changed files (all):", changed)
+    print("Changed files (app/ only):", changed_app)
+
     with open('files/changed_files.json', 'w') as f:
-        json.dump(changed, f, indent=2)
+        json.dump(changed_app, f, indent=2)
 
 if __name__ == '__main__':
     main()

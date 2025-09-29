@@ -50,7 +50,41 @@ def diagnose_with_llm(log_text: str) -> str:
     except Exception as e:
         return f"[LLM call failed, falling back to rules] {e}"
 
+def junit_failures_errors(report_path: str) -> tuple[int,int,int]:
+    if not os.path.exists(report_path):
+        return (0, 0, -1)  # sin reporte
+    tree = ET.parse(report_path)
+    root = tree.getroot()
+    # maneja <testsuite> o <testsuites>
+    if root.tag == "testsuite":
+        tests = int(root.attrib.get("tests", "0"))
+        failures = int(root.attrib.get("failures", "0"))
+        errors = int(root.attrib.get("errors", "0"))
+        return (failures, errors, tests)
+    totals = [0,0,0]
+    for ts in root.iter("testsuite"):
+        totals[0] += int(ts.attrib.get("failures", "0"))
+        totals[1] += int(ts.attrib.get("errors", "0"))
+        totals[2] += int(ts.attrib.get("tests", "0"))
+    return tuple(totals)
+
+
 def main():
+    # 1) Si no se seleccionaron tests, salir
+    sel = Path("files/selected_tests.json")
+    if sel.exists():
+        data = json.loads(sel.read_text())
+        if not data.get("selected_tests"):
+            print("No tests selected → skipping LLM diagnosis.")
+            return
+
+    # 2) Si hubo tests pero 0 fallos/errores, salir
+    failures, errors, tests = junit_failures_errors("files/report.xml")
+    if tests >= 0 and failures == 0 and errors == 0:
+        print("All tests passed → skipping LLM diagnosis.")
+        return
+
+    # 3) Si no hay log, tampoco hay mucho que hacer
     log_path = Path('files/pytest_output.log')
     if not log_path.exists():
         print('No pytest_output.log found; nothing to diagnose.')

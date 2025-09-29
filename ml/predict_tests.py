@@ -45,32 +45,45 @@ def decide_tests(changed_files, min_tests=1, top_k=None, prob_threshold=None):
     return picked, scored
 
 
+# ml/predict_tests.py (solo el main modificado)
 def main():
-    # en main():
-    top_k = int(os.getenv('TOP_K', '3'))
-    prob_threshold = float(os.getenv('PROB_THRESHOLD', '0.10'))
-    
-    changed_env = os.getenv('CHANGED_FILES')
-    if changed_env:
-        changed = [s.strip() for s in changed_env.split(',') if s.strip()]
+    changed = []
+    if os.path.exists('files/changed_files.json'):
+        changed = json.load(open('files/changed_files.json'))
     else:
-        # try to read from artifact of collect_changed_files.py
-        if os.path.exists('files/changed_files.json'):
-            changed = json.load(open('files/changed_files.json'))
-        else:
-            changed = ['app/login.py']
+        env = os.getenv('CHANGED_FILES')
+        if env:
+            changed = [s.strip() for s in env.split(',') if s.strip()]
+        # Si no hay archivo ni env ⇒ lista vacía
 
-    tests, scored = decide_tests(changed, min_tests=int(os.getenv('MIN_TESTS', '1')),
-                                top_k=top_k, prob_threshold=prob_threshold)
+    # Si no hay cambios en app/, NO seleccionar tests
+    if not changed:
+        decision = {
+            'changed_files': [],
+            'selected_tests': [],
+            'class_probs': [],
+            'note': 'No app/ changes detected; skipping tests.'
+        }
+        print("=== AI Test Selection ===")
+        print(json.dumps(decision, indent=2))
+        with open('files/selected_tests.json', 'w') as f:
+            json.dump(decision, f, indent=2)
+        return
+
+    tests, scored = decide_tests(
+        changed,
+        min_tests=int(os.getenv('MIN_TESTS', '1')),
+        top_k=int(os.getenv('TOP_K', '2')) if os.getenv('TOP_K') else None,
+        prob_threshold=float(os.getenv('PROB_THRESHOLD')) if os.getenv('PROB_THRESHOLD') else None
+    )
 
     decision = {
         'changed_files': changed,
         'selected_tests': tests,
-        'class_probs': [{ 'label': c, 'prob': float(p)} for c,p in scored]
+        'class_probs': [{'label': c, 'prob': float(p)} for c,p in scored]
     }
     print("=== AI Test Selection ===")
     print(json.dumps(decision, indent=2))
-
     with open('files/selected_tests.json', 'w') as f:
         json.dump(decision, f, indent=2)
 
