@@ -1,4 +1,4 @@
-name: AI CI — ML Test Selection + LLM Diagnosis (Modular)
+name: AI CI — ML Test Selection + LLM Diagnosis
 
 on:
   push:
@@ -9,229 +9,113 @@ on:
 env:
   ARTIFACT_DIR: files
   PYTHONUNBUFFERED: "1"
-  PY_VERSION: "3.11"
-  VENV_DIR: ".venv"
-
-defaults:
-  run:
-    shell: bash
 
 jobs:
-  prepare-env:
-    name: Prepare env & cache venv
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PY_VERSION }}
-      - name: Cache venv
-        id: cache-venv
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - name: Create venv & install deps (if cache miss)
-        if: steps.cache-venv.outputs.cache-hit != 'true'
-        run: |
-          python -m venv $VENV_DIR
-          $VENV_DIR/bin/python -m pip install --upgrade pip
-          $VENV_DIR/bin/pip install -r requirements.txt
+
       - name: Prepare artifact dir
-        run: mkdir -p $ARTIFACT_DIR
+        run: mkdir -p files
+
       - name: Set CI diff env (push/PR compatibility)
         run: |
           echo "GITHUB_EVENT_BEFORE=${{ github.event.before }}" >> $GITHUB_ENV
           echo "GITHUB_BASE_REF=${{ github.base_ref }}" >> $GITHUB_ENV
           echo "GITHUB_EVENT_NAME=${{ github.event_name }}" >> $GITHUB_ENV
 
-  train-model:
-    name: Train model
-    needs: [prepare-env]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/cache@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - run: mkdir -p $ARTIFACT_DIR
-      - name: Train
-        run: $VENV_DIR/bin/python ml/train_test_selector.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: ml-model
-          path: |
-            ${{ env.ARTIFACT_DIR }}/model_rf.pkl
-            ${{ env.ARTIFACT_DIR }}/test_index.json
+          python-version: "3.11"
 
-  collect-changes:
-    name: Collect changed files
-    needs: [prepare-env]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/cache@v4
+      - name: Cache pip
+        uses: actions/cache@v4
         with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - run: mkdir -p $ARTIFACT_DIR
-      - name: Collect
-        run: $VENV_DIR/bin/python ci/collect_changed_files.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: changed
-          path: ${{ env.ARTIFACT_DIR }}/changed_files.json
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
-  predict-tests:
-    name: Predict tests (ML)
-    needs: [train-model, collect-changes]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - run: mkdir -p $ARTIFACT_DIR
-      - uses: actions/download-artifact@v4
-        with:
-          name: ml-model
-          path: ${{ env.ARTIFACT_DIR }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: changed
-          path: ${{ env.ARTIFACT_DIR }}
-      - name: Predict
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Entrena y guarda modelo/mapping en files/
+      - name: Train model
+        run: python ml/train_test_selector.py
+
+      # Detecta cambios y escribe files/changed_files.json (solo app/)
+      - name: Collect changed files
+        run: python ci/collect_changed_files.py
+
+      # Predice tests y escribe files/selected_tests.json
+      - name: Predict tests with ML
+        run: python ml/predict_tests.py
         env:
-          # Ajusta a gusto:
+          # Opcionales según tu preferencia de selección:
           # TOP_K: "2"
           # PROB_THRESHOLD: "0.30"
+          # STRICT_CHANGED_ONLY: "0"
           MIN_TESTS: "1"
-        run: $VENV_DIR/bin/python ml/predict_tests.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: selection
-          path: ${{ env.ARTIFACT_DIR }}/selected_tests.json
 
-  run-tests:
-    name: Run selected tests
-    needs: [predict-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - run: mkdir -p $ARTIFACT_DIR
-      - uses: actions/download-artifact@v4
-        with:
-          name: selection
-          path: ${{ env.ARTIFACT_DIR }}
-      - name: Run pytest (continue on error to allow diagnosis)
+      # Ejecuta pytest con continue-on-error para permitir diagnóstico posterior
+      - name: Run selected tests
         id: pytest
         continue-on-error: true
+        run: python ci/run_selected_tests.py
         env:
           PYTHONPATH: ${{ github.workspace }}
-        run: $VENV_DIR/bin/python ci/run_selected_tests.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            ${{ env.ARTIFACT_DIR }}/report.xml
-            ${{ env.ARTIFACT_DIR }}/pytest_output.log
 
-  diagnose:
-    name: Diagnose failures (LLM)
-    needs: [run-tests]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - uses: actions/cache@v4
-        with:
-          path: ${{ env.VENV_DIR }}
-          key: venv-${{ runner.os }}-${{ env.PY_VERSION }}-${{ hashFiles('requirements.txt') }}
-      - run: mkdir -p $ARTIFACT_DIR
-      - uses: actions/download-artifact@v4
-        with:
-          name: test-results
-          path: ${{ env.ARTIFACT_DIR }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: selection
-          path: ${{ env.ARTIFACT_DIR }}
-      - name: Diagnose
+      # Diagnóstico solo si hubo fallos (el script ya salta cuando todo pasa o no hay tests)
+      - name: Diagnose failure with LLM
         id: diagnose
+        if: always()
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: $VENV_DIR/bin/python ci/diagnose_failure_llm.py
-      # 🔒 Siempre producir diagnosis.txt (placeholder si no hubo fallos o no hubo tests)
-      - name: Ensure diagnosis placeholder
-        run: |
-          mkdir -p "$ARTIFACT_DIR"
-          if [ ! -s "$ARTIFACT_DIR/diagnosis.txt" ]; then
-            echo "No diagnosis available (no tests selected or all passed)." > "$ARTIFACT_DIR/diagnosis.txt"
-          fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: diagnosis
-          path: ${{ env.ARTIFACT_DIR }}/diagnosis.txt
+        run: python ci/diagnose_failure_llm.py
 
-  summarize-and-gate:
-    name: Summary & final gate
-    needs: [run-tests, diagnose]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
-      - run: mkdir -p $ARTIFACT_DIR
-      - uses: actions/download-artifact@v4
-        with:
-          name: test-results
-          path: ${{ env.ARTIFACT_DIR }}
-      - uses: actions/download-artifact@v4
-        with:
-          name: diagnosis
-          path: ${{ env.ARTIFACT_DIR }}
-
+      # Pega el diagnóstico al Summary del job
       - name: Append AI diagnosis to Summary
         if: always()
         run: |
           echo "# When automation is not enough: smart CI/CD pipelines" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "## AI Diagnosis" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Commit & Event" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Event:  $GITHUB_EVENT_NAME" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
-          sed -e 's/\r$//' $ARTIFACT_DIR/diagnosis.txt >> "$GITHUB_STEP_SUMMARY"
-          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "## AI Diagnosis" >> "$GITHUB_STEP_SUMMARY"
+          if [ -s files/diagnosis.txt ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            sed -e 's/\r$//' files/diagnosis.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "_No diagnosis available (no failures or no log)_" >> "$GITHUB_STEP_SUMMARY"
+          fi
 
-      - name: Fail workflow if tests failed
+      # (Opcional) Anotación visible en la UI con el diagnóstico
+      - name: Annotate AI diagnosis
+        if: always() && hashFiles('files/diagnosis.txt') != ''
+        shell: bash
         run: |
-          python - << 'PY'
-          import os, sys, xml.etree.ElementTree as ET
-          p = os.path.join(os.environ.get("ARTIFACT_DIR","files"), "report.xml")
-          if not os.path.exists(p):
-              print("No report.xml found; assuming no tests -> pass")
-              sys.exit(0)
-          root = ET.parse(p).getroot()
-          fails = errs = tests = 0
-          if root.tag == "testsuite":
-              tests  = int(root.attrib.get("tests","0"))
-              fails  = int(root.attrib.get("failures","0"))
-              errs   = int(root.attrib.get("errors","0"))
-          else:
-              for ts in root.iter("testsuite"):
-                  tests += int(ts.attrib.get("tests","0"))
-                  fails += int(ts.attrib.get("failures","0"))
-                  errs  += int(ts.attrib.get("errors","0"))
-          print(f"JUnit totals: tests={tests} failures={fails} errors={errs}")
-          sys.exit(1 if (fails>0 or errs>0) else 0)
-          PY
+          msg="$(sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g' files/diagnosis.txt)"
+          echo "::notice title=AI Diagnosis::${msg}"
+
+      # Subir artefactos para inspección
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-ci-artifacts
+          path: files/
+
+      # Gate final: si pytest falló, falla el job (después de diagnosticar y subir artifacts)
+      - name: Fail job if pytest failed
+        if: ${{ steps.pytest.outcome == 'failure' }}
+        run: exit 1

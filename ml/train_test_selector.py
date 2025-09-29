@@ -55,7 +55,7 @@ def featurize(df):
     ], axis=1)
     return X
 
-def main(model_path='model_rf.pkl', mapping_path='files/test_index.json'):
+def main(model_path='files/model_rf.pkl', mapping_path='files/test_index.json'):
     df = make_example()
     # keep 'none' as a class to learn "likely no failures"
     y = df['failed_test']
@@ -92,5 +92,5 @@ def main(model_path='model_rf.pkl', mapping_path='files/test_index.json'):
     print(f"Saved mapping to {mapping_path}")
 
 if __name__ == '__main__':
-    model_path = os.getenv('MODEL_PATH', 'model_rf.pkl')
+    model_path = os.getenv('MODEL_PATH', 'files/model_rf.pkl')
     main(model_path=model_path)

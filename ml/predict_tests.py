@@ -6,7 +6,7 @@ import joblib
 import numpy as np
 import pandas as pd
 
-DEFAULT_MODEL = os.getenv('MODEL_PATH', 'model_rf.pkl')
+DEFAULT_MODEL = os.getenv('MODEL_PATH', 'files/model_rf.pkl')
 MAPPING_PATH = 'files/test_index.json'
 
 def featurize_row(files, commit_msg_len=50, weekday=2):
