@@ -6,16 +6,28 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  ARTIFACT_DIR: files
+  PYTHONUNBUFFERED: "1"
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Force a failing test to showcase diagnosis; set to '' to disable
-      BREAK_PAYMENT: ""
-      MIN_TESTS: "1"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare artifact dir
+        run: mkdir -p files
+
+      - name: Set CI diff env (push/PR compatibility)
+        run: |
+          echo "GITHUB_EVENT_BEFORE=${{ github.event.before }}" >> $GITHUB_ENV
+          echo "GITHUB_BASE_REF=${{ github.base_ref }}" >> $GITHUB_ENV
+          echo "GITHUB_EVENT_NAME=${{ github.event_name }}" >> $GITHUB_ENV
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -29,45 +41,81 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-      - name: Cache trained model
-        id: cache-model
-        uses: actions/cache@v4
-        with:
-          path: model_rf.pkl
-          key: ${{ runner.os }}-model-${{ hashFiles('ml/**') }}
-
-      - name: Train model (if cache miss)
-        if: steps.cache-model.outputs.cache-hit != 'true'
+      # Entrena y guarda modelo/mapping en files/
+      - name: Train model
         run: python ml/train_test_selector.py
 
+      # Detecta cambios y escribe files/changed_files.json (solo app/)
       - name: Collect changed files
         run: python ci/collect_changed_files.py
 
+      # Predice tests y escribe files/selected_tests.json
       - name: Predict tests with ML
         run: python ml/predict_tests.py
+        env:
+          # Opcionales según tu preferencia de selección:
+          # TOP_K: "2"
+          # PROB_THRESHOLD: "0.30"
+          # STRICT_CHANGED_ONLY: "0"
+          MIN_TESTS: "1"
 
+      # Ejecuta pytest con continue-on-error para permitir diagnóstico posterior
       - name: Run selected tests
         id: pytest
         continue-on-error: true
         run: python ci/run_selected_tests.py
+        env:
+          PYTHONPATH: ${{ github.workspace }}
 
+      # Diagnóstico solo si hubo fallos (el script ya salta cuando todo pasa o no hay tests)
       - name: Diagnose failure with LLM
+        id: diagnose
         if: always()
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-4o-mini
         run: python ci/diagnose_failure_llm.py
 
+      # Pega el diagnóstico al Summary del job
+      - name: Append AI diagnosis to Summary
+        if: always()
+        run: |
+          echo "# When automation is not enough: smart CI/CD pipelines" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## Commit & Event" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Event:  $GITHUB_EVENT_NAME" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "## AI Diagnosis" >> "$GITHUB_STEP_SUMMARY"
+          if [ -s files/diagnosis.txt ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            sed -e 's/\r$//' files/diagnosis.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "_No diagnosis available (no failures or no log)_" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # (Opcional) Anotación visible en la UI con el diagnóstico
+      - name: Annotate AI diagnosis
+        if: always() && hashFiles('files/diagnosis.txt') != ''
+        shell: bash
+        run: |
+          msg="$(sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g' files/diagnosis.txt)"
+          echo "::notice title=AI Diagnosis::${msg}"
+
+      # Subir artefactos para inspección
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ai-ci-artifacts
-          path: |
-            files/changed_files.json
-            files/selected_tests.json
-            files/pytest_output.log
-            files/report.xml
-            files/diagnosis.txt
+          path: files/
+
+      # Gate final: si pytest falló, falla el job (después de diagnosticar y subir artifacts)
+      - name: Fail job if pytest failed
+        if: ${{ steps.pytest.outcome == 'failure' }}
+        run: exit 1

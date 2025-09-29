@@ -73,8 +73,8 @@ def main():
     tests, scored = decide_tests(
         changed,
         min_tests=int(os.getenv('MIN_TESTS', '1')),
-        top_k=int(os.getenv('TOP_K', '2')) if os.getenv('TOP_K') else None,
-        prob_threshold=float(os.getenv('PROB_THRESHOLD')) if os.getenv('PROB_THRESHOLD') else None
+        top_k=int(os.getenv('TOP_K', '3')),
+        prob_threshold=float(os.getenv('PROB_THRESHOLD', '0.15'))
     )
 
     decision = {

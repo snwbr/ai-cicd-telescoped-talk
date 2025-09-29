@@ -2,6 +2,8 @@ import json
 import os
 import re
 from pathlib import Path
+import xml.etree.ElementTree as ET
+
 
 def simple_rules_based_summary(log_text: str) -> str:
     lines = log_text.lower().splitlines()
