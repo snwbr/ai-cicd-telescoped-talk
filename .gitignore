@@ -10,3 +10,5 @@ pytest_output.log
 report.xml
 diagnosis.txt
 test_index.json
+
+~$*
