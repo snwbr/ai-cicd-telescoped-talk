@@ -9,7 +9,7 @@ def apply_discount(amount: float, pct: float) -> float:
     if os.getenv("BREAK_PAYMENT") == "1":
         # wrong calculation: subtracts flat pct instead of percentage
         return amount - pct
-    return amount * (1 - pct/100.0) +1
+    return amount * (1 - pct/100.0)
 
 def calculate_tax(amount: float, tax_rate: float = 0.21) -> float:
     """Calculate tax amount"""
