@@ -6,7 +6,7 @@ from typing import Optional, Dict
 USERS = {
     "admin": {"password": "2bb80d537b1da3e38bd30361aa855686bde0eacd7162fef6a25fe97bf527a25b", "role": "admin", "last_login": None},  # "secret"
     "user": {"password": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f", "role": "user", "last_login": None},   # "password"
-    "guest": {"password": "356a192b7913b04c54574d18c28d46e6395428ab", "role": "guest", "last_login": None}  # "hello"
+    "guest2": {"password": "356a192b7913b04c54574d18c28d46e6395428ab", "role": "guest", "last_login": None}  # "hello"
 }
 
 def hash_password(password: str) -> str:
