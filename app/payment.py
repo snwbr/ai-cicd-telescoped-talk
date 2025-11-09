@@ -3,8 +3,6 @@ import math
 from typing import Tuple, Optional
 from decimal import Decimal, ROUND_HALF_UP
 
-# Test indirect dependency: ui.py changes can affect login.py
-
 def apply_discount(amount: float, pct: float) -> float:
     """Apply percentage discount to amount"""
     # Intentional 'demo bug' when BREAK_PAYMENT is set to trigger failure diagnosis
