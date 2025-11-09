@@ -23,17 +23,35 @@ def make_example(n=20000):
         # random subset of changed files
         k = np.random.choice([1, 2, 3], p=[0.6, 0.3, 0.1])
         changed = sorted(np.random.choice(FILES, size=k, replace=False).tolist())
-        # label: which single test failed (multi-label possible, keep simple here)
-        # induce correlations:
-        if 'app/payment.py' in changed and random.random() < 0.55:
-            failed = 'tests/test_payment.py'
-        elif 'app/login.py' in changed and random.random() < 0.45:
-            failed = 'tests/test_login.py'
-        elif 'app/ui.py' in changed and random.random() < 0.35:
-            failed = 'tests/test_ui.py'
-        else:
-            # sometimes nothing fails (ok build); mark "none"
-            failed = 'none' if random.random() < 0.35 else random.choice(TESTS)
+        # label: which test failed (primary failure)
+        # induce correlations with indirect dependencies:
+        # Model learns that file changes can affect multiple related tests
+        
+        failed = None
+        
+        # Simulate indirect dependencies FIRST (before direct correlations)
+        # This teaches the model that single file changes can affect related tests
+        if 'app/payment.py' in changed and len(changed) == 1:
+            if random.random() < 0.20:  # 20% chance of indirect effect
+                # payment.py alone → sometimes login fails (shared dependencies)
+                failed = 'tests/test_login.py'
+        
+        if not failed and 'app/login.py' in changed and len(changed) == 1:
+            if random.random() < 0.15:  # 15% chance
+                # login.py alone → sometimes payment fails (shared user context)
+                failed = 'tests/test_payment.py'
+        
+        # Direct correlations (primary failure) - only if no indirect dependency
+        if not failed:
+            if 'app/payment.py' in changed and random.random() < 0.55:
+                failed = 'tests/test_payment.py'
+            elif 'app/login.py' in changed and random.random() < 0.45:
+                failed = 'tests/test_login.py'
+            elif 'app/ui.py' in changed and random.random() < 0.35:
+                failed = 'tests/test_ui.py'
+            else:
+                # sometimes nothing fails (ok build); mark "none"
+                failed = 'none' if random.random() < 0.35 else random.choice(TESTS)
 
         commit_msg_len = np.random.randint(10, 120)
         weekday = np.random.randint(0, 7)

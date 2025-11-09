@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1400" height="2000" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#357ABD;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#50C878;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3FAF6C;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EE5A5A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD93D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFC107;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666" />
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1400" height="2000" fill="#F8F9FA"/>
+  
+  <!-- Title -->
+  <text x="700" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" fill="#2C3E50">
+    Demo de Pipeline CI/CD con IA
+  </text>
+  <text x="700" y="70" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="#7F8C8D">
+    Selección de Tests con ML + Diagnóstico de Fallos con LLM
+  </text>
+  
+  <!-- Section 1: Architecture Overview -->
+  <rect x="50" y="100" width="1300" height="200" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="130" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Arquitectura del Sistema</text>
+  
+  <!-- App Code -->
+  <rect x="80" y="160" width="180" height="120" rx="8" fill="url(#grad1)" filter="url(#shadow)"/>
+  <text x="170" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Código de la Aplicación</text>
+  <text x="170" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• login.py</text>
+  <text x="170" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• payment.py</text>
+  <text x="170" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• ui.py</text>
+  
+  <!-- Tests -->
+  <rect x="300" y="160" width="180" height="120" rx="8" fill="url(#grad2)" filter="url(#shadow)"/>
+  <text x="390" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Suite de Tests</text>
+  <text x="390" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• test_login.py</text>
+  <text x="390" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• test_payment.py</text>
+  <text x="390" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• test_ui.py</text>
+  
+  <!-- ML Module -->
+  <rect x="520" y="160" width="180" height="120" rx="8" fill="url(#grad4)" filter="url(#shadow)"/>
+  <text x="610" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Módulo ML</text>
+  <text x="610" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• train_test_selector.py</text>
+  <text x="610" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• predict_tests.py</text>
+  <text x="610" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Modelo Random Forest</text>
+  
+  <!-- CI Module -->
+  <rect x="740" y="160" width="180" height="120" rx="8" fill="#9B59B6" filter="url(#shadow)"/>
+  <text x="830" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Módulo CI</text>
+  <text x="830" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• collect_changed_files.py</text>
+  <text x="830" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• run_selected_tests.py</text>
+  <text x="830" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• diagnose_failure_llm.py</text>
+  
+  <!-- LLM -->
+  <rect x="960" y="160" width="180" height="120" rx="8" fill="url(#grad3)" filter="url(#shadow)"/>
+  <text x="1050" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">Diagnóstico LLM</text>
+  <text x="1050" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• OpenAI GPT-4</text>
+  <text x="1050" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Fallback Basado en Reglas</text>
+  <text x="1050" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Análisis Inteligente</text>
+  
+  <!-- GitHub Actions -->
+  <rect x="1180" y="160" width="150" height="120" rx="8" fill="#24292E" filter="url(#shadow)"/>
+  <text x="1255" y="185" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="white">GitHub Actions</text>
+  <text x="1255" y="210" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Pipeline CI/CD</text>
+  <text x="1255" y="230" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Automatizado</text>
+  <text x="1255" y="250" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="white">• Orquestación</text>
+  
+  <!-- Section 2: ML Training Flow -->
+  <rect x="50" y="330" width="630" height="320" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="360" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Entrenamiento del Modelo ML</text>
+  
+  <!-- Training Steps -->
+  <rect x="80" y="380" width="280" height="80" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="220" y="405" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2E7D32">1. Generar Datos Sintéticos</text>
+  <text x="220" y="425" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">20,000 ejemplos históricos</text>
+  <text x="220" y="445" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Cambios de archivos -> Fallos de tests</text>
+  
+  <rect x="380" y="380" width="280" height="80" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+  <text x="520" y="405" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#1565C0">2. Ingeniería de Features</text>
+  <text x="520" y="425" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Codificación one-hot de archivos</text>
+  <text x="520" y="445" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Metadatos de commits</text>
+  
+  <rect x="80" y="480" width="280" height="80" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="220" y="505" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">3. Entrenar Random Forest</text>
+  <text x="220" y="525" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">500 estimadores</text>
+  <text x="220" y="545" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Predecir probabilidad de fallo</text>
+  
+  <rect x="380" y="480" width="280" height="80" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="520" y="505" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#6A1B9A">4. Guardar Modelo</text>
+  <text x="520" y="525" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">model_rf.pkl</text>
+  <text x="520" y="545" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">test_index.json</text>
+  
+  <!-- Arrows -->
+  <path d="M 360 420 L 380 420" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 220 460 L 220 480" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 360 540 L 380 540" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Section 3: CI/CD Pipeline Flow -->
+  <rect x="700" y="330" width="650" height="600" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="710" y="360" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Flujo del Pipeline CI/CD</text>
+  
+  <!-- Pipeline Steps -->
+  <rect x="720" y="380" width="620" height="60" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="1030" y="405" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#2E7D32">Paso 1: Configuración y Checkout</text>
+  <text x="1030" y="425" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Instalar Python 3.11, dependencias, preparar entorno</text>
+  
+  <rect x="720" y="450" width="620" height="60" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+  <text x="1030" y="475" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#1565C0">Paso 2: Entrenar Modelo ML</text>
+  <text x="1030" y="495" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Entrenar Random Forest (en caché si no cambió)</text>
+  
+  <rect x="720" y="520" width="620" height="60" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="1030" y="545" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#E65100">Paso 3: Detectar Archivos Modificados</text>
+  <text x="1030" y="565" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Git diff: app/login.py, app/payment.py -> changed_files.json</text>
+  
+  <rect x="720" y="590" width="620" height="60" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="1030" y="615" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#6A1B9A">Paso 4: Selección de Tests con ML</text>
+  <text x="1030" y="635" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Predecir: test_payment.py (62.7%), test_login.py (30.2%) -> selected_tests.json</text>
+  
+  <rect x="720" y="660" width="620" height="60" rx="8" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+  <text x="1030" y="685" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#C62828">Paso 5: Ejecutar Tests Seleccionados</text>
+  <text x="1030" y="705" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">pytest test_payment.py test_login.py -> pytest_output.log, report.xml</text>
+  
+  <rect x="720" y="730" width="620" height="60" rx="8" fill="#E1F5FE" stroke="#03A9F4" stroke-width="2"/>
+  <text x="1030" y="755" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#0277BD">Paso 6: Diagnóstico LLM (si falló)</text>
+  <text x="1030" y="775" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Analizar logs -> Análisis de causa raíz -> diagnosis.txt</text>
+  
+  <rect x="720" y="800" width="620" height="60" rx="8" fill="#F1F8E9" stroke="#8BC34A" stroke-width="2"/>
+  <text x="1030" y="825" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#558B2F">Paso 7: Subir Artefactos y Reporte</text>
+  <text x="1030" y="845" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">Todos los artefactos + Resumen de GitHub con diagnóstico IA</text>
+  
+  <!-- Arrows between steps -->
+  <path d="M 1030 440 L 1030 450" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1030 510 L 1030 520" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1030 580 L 1030 590" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1030 650 L 1030 660" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1030 720 L 1030 730" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1030 790 L 1030 800" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Section 4: ML Prediction Details -->
+  <rect x="50" y="680" width="630" height="250" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="710" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Proceso de Selección de Tests con ML</text>
+  
+  <!-- Input -->
+  <rect x="80" y="730" width="280" height="80" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="220" y="755" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2E7D32">Entrada: Archivos Modificados</text>
+  <text x="220" y="775" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">app/login.py</text>
+  <text x="220" y="795" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">app/payment.py</text>
+  
+  <!-- ML Model -->
+  <rect x="380" y="730" width="280" height="80" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="520" y="755" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">Predicción del Modelo ML</text>
+  <text x="520" y="775" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Clasificador Random Forest</text>
+  <text x="520" y="795" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Puntuaciones de probabilidad</text>
+  
+  <!-- Output -->
+  <rect x="80" y="830" width="280" height="80" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+  <text x="220" y="855" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#1565C0">Salida: Tests Seleccionados</text>
+  <text x="220" y="875" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">test_payment.py (62.7%)</text>
+  <text x="220" y="895" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">test_login.py (30.2%)</text>
+  
+  <!-- Threshold -->
+  <rect x="380" y="830" width="280" height="80" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="520" y="855" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#6A1B9A">Lógica de Filtrado</text>
+  <text x="520" y="875" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">PROB_THRESHOLD: 0.15</text>
+  <text x="520" y="895" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">TOP_K: 3, MIN_TESTS: 1</text>
+  
+  <!-- Arrows -->
+  <path d="M 360 770 L 380 770" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 220 810 L 220 830" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 360 870 L 380 870" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Section 5: LLM Diagnosis Flow -->
+  <rect x="50" y="960" width="1300" height="280" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="990" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Flujo de Diagnóstico de Fallos con LLM</text>
+  
+  <!-- Diagnosis Steps -->
+  <rect x="80" y="1010" width="240" height="100" rx="8" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+  <text x="200" y="1035" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#C62828">1. Fallo de Test Detectado</text>
+  <text x="200" y="1055" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Código de salida pytest ≠ 0</text>
+  <text x="200" y="1075" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">pytest_output.log capturado</text>
+  <text x="200" y="1095" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">report.xml generado</text>
+  
+  <rect x="340" y="1010" width="240" height="100" rx="8" fill="#E1F5FE" stroke="#03A9F4" stroke-width="2"/>
+  <text x="460" y="1035" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#0277BD">2. Verificar Clave API</text>
+  <text x="460" y="1055" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">¿OPENAI_API_KEY existe?</text>
+  <text x="460" y="1075" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Sí -> Diagnóstico LLM</text>
+  <text x="460" y="1095" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">No -> Fallback Basado en Reglas</text>
+  
+  <rect x="600" y="1010" width="240" height="100" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="720" y="1035" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#6A1B9A">3. Análisis LLM</text>
+  <text x="720" y="1055" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Enviar logs a GPT-4o-mini</text>
+  <text x="720" y="1075" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Prompt: Análisis de causa raíz</text>
+  <text x="720" y="1095" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Máx 220 tokens, conciso</text>
+  
+  <rect x="860" y="1010" width="240" height="100" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="980" y="1035" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2E7D32">4. Fallback Basado en Reglas</text>
+  <text x="980" y="1055" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Coincidencia de patrones:</text>
+  <text x="980" y="1075" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">• Errores de aserción</text>
+  <text x="980" y="1095" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">• Errores de importación</text>
+  
+  <rect x="1120" y="1010" width="200" height="100" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="1220" y="1035" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">5. Generar Reporte</text>
+  <text x="1220" y="1055" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">diagnosis.txt</text>
+  <text x="1220" y="1075" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Resumen de GitHub</text>
+  <text x="1220" y="1095" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Anotaciones</text>
+  
+  <!-- Arrows -->
+  <path d="M 320 1060 L 340 1060" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 580 1060 L 600 1060" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 840 1060 L 860 1060" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1100 1060 L 1120 1060" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Section 6: Benefits -->
+  <rect x="50" y="1270" width="1300" height="200" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="1300" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Beneficios Clave</text>
+  
+  <rect x="80" y="1320" width="300" height="130" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="230" y="1345" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#2E7D32">Rendimiento</text>
+  <text x="230" y="1365" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Ejecutar solo tests relevantes</text>
+  <text x="230" y="1385" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Reducción de tiempo 70-80%</text>
+  <text x="230" y="1405" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Bucles de feedback más rápidos</text>
+  <text x="230" y="1425" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Menores costos de CI</text>
+  
+  <rect x="400" y="1320" width="300" height="130" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+  <text x="550" y="1345" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#1565C0">Inteligencia</text>
+  <text x="550" y="1365" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• ML aprende del historial</text>
+  <text x="550" y="1385" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• LLM entiende el contexto</text>
+  <text x="550" y="1405" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Diagnósticos accionables</text>
+  <text x="550" y="1425" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Sistema auto-mejorable</text>
+  
+  <rect x="720" y="1320" width="300" height="130" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="870" y="1345" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#E65100">Confiabilidad</text>
+  <text x="870" y="1365" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Fallback basado en reglas</text>
+  <text x="870" y="1385" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Funciona sin clave API</text>
+  <text x="870" y="1405" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Degradación elegante</text>
+  <text x="870" y="1425" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Listo para producción</text>
+  
+  <rect x="1040" y="1320" width="280" height="130" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="1180" y="1345" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="middle" fill="#6A1B9A">Observabilidad</text>
+  <text x="1180" y="1365" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Artefactos completos</text>
+  <text x="1180" y="1385" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Resumen de GitHub</text>
+  <text x="1180" y="1405" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Logs detallados</text>
+  <text x="1180" y="1425" font-family="Arial, sans-serif" font-size="11" text-anchor="middle" fill="#555">• Trazabilidad</text>
+  
+  <!-- Section 7: Data Flow -->
+  <rect x="50" y="1500" width="1300" height="200" rx="10" fill="white" stroke="#E0E0E0" stroke-width="2" filter="url(#shadow)"/>
+  <text x="60" y="1530" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#2C3E50">Flujo de Datos y Artefactos</text>
+  
+  <!-- Files -->
+  <rect x="80" y="1550" width="200" height="130" rx="8" fill="#E8F5E9" stroke="#4CAF50" stroke-width="2"/>
+  <text x="180" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#2E7D32">Archivos de Entrada</text>
+  <text x="180" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">changed_files.json</text>
+  <text x="180" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">model_rf.pkl</text>
+  <text x="180" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">test_index.json</text>
+  
+  <rect x="300" y="1550" width="200" height="130" rx="8" fill="#E3F2FD" stroke="#2196F3" stroke-width="2"/>
+  <text x="400" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#1565C0">Salida ML</text>
+  <text x="400" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">selected_tests.json</text>
+  <text x="400" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Probabilidades de clase</text>
+  <text x="400" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Puntuaciones de riesgo</text>
+  
+  <rect x="520" y="1550" width="200" height="130" rx="8" fill="#FFEBEE" stroke="#F44336" stroke-width="2"/>
+  <text x="620" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#C62828">Resultados de Tests</text>
+  <text x="620" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">pytest_output.log</text>
+  <text x="620" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">report.xml (JUnit)</text>
+  <text x="620" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Códigos de salida</text>
+  
+  <rect x="740" y="1550" width="200" height="130" rx="8" fill="#F3E5F5" stroke="#9C27B0" stroke-width="2"/>
+  <text x="840" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#6A1B9A">Diagnóstico</text>
+  <text x="840" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">diagnosis.txt</text>
+  <text x="840" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Análisis de causa raíz</text>
+  <text x="840" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Próximos pasos</text>
+  
+  <rect x="960" y="1550" width="200" height="130" rx="8" fill="#FFF3E0" stroke="#FF9800" stroke-width="2"/>
+  <text x="1060" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#E65100">Salida de GitHub</text>
+  <text x="1060" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Resumen de Paso</text>
+  <text x="1060" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Anotaciones</text>
+  <text x="1060" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Subida de artefactos</text>
+  
+  <rect x="1180" y="1550" width="150" height="130" rx="8" fill="#E1F5FE" stroke="#03A9F4" stroke-width="2"/>
+  <text x="1255" y="1575" font-family="Arial, sans-serif" font-size="12" font-weight="bold" text-anchor="middle" fill="#0277BD">Estado Final</text>
+  <text x="1255" y="1595" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Todos los artefactos</text>
+  <text x="1255" y="1615" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Preservados</text>
+  <text x="1255" y="1635" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#555">Retención 30 días</text>
+  
+  <!-- Arrows -->
+  <path d="M 280 1615 L 300 1615" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 500 1615 L 520 1615" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 720 1615 L 740 1615" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 940 1615 L 960 1615" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <path d="M 1160 1615 L 1180 1615" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+  
+  <!-- Footer -->
+  <text x="700" y="1750" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#7F8C8D">
+    Demo de Pipeline CI/CD con IA - Selección de Tests con ML + Diagnóstico de Fallos con LLM
+  </text>
+  <text x="700" y="1770" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#95A5A6">
+    Demuestra selección inteligente de tests usando Machine Learning y diagnóstico automatizado de fallos usando Modelos de Lenguaje Grande
+  </text>
+</svg>
