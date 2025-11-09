@@ -2,8 +2,12 @@
 # Descomentar para debug
 # set -x
 
+export PROB_THRESHOLD="0.15"
+export TOP_K="3"
+export MIN_TESTS="1"
+
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt 2>&1 > /dev/null
 
 # 1) Entrenar el modelo (RF)
 python3 ml/train_test_selector.py

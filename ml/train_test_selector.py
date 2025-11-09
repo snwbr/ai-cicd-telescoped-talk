@@ -31,15 +31,16 @@ def make_example(n=20000):
         
         # Simulate indirect dependencies FIRST (before direct correlations)
         # This teaches the model that single file changes can affect related tests
-        if 'app/payment.py' in changed and len(changed) == 1:
-            if random.random() < 0.20:  # 20% chance of indirect effect
-                # payment.py alone → sometimes login fails (shared dependencies)
+        # UI and Login are often related (UI forms, authentication interfaces, etc.)
+        if 'app/ui.py' in changed and len(changed) == 1:
+            if random.random() < 0.25:  # 25% chance of indirect effect
+                # ui.py alone → sometimes login fails (UI changes affect login forms)
                 failed = 'tests/test_login.py'
         
         if not failed and 'app/login.py' in changed and len(changed) == 1:
-            if random.random() < 0.15:  # 15% chance
-                # login.py alone → sometimes payment fails (shared user context)
-                failed = 'tests/test_payment.py'
+            if random.random() < 0.20:  # 20% chance
+                # login.py alone → sometimes ui fails (login logic affects UI components)
+                failed = 'tests/test_ui.py'
         
         # Direct correlations (primary failure) - only if no indirect dependency
         if not failed:
